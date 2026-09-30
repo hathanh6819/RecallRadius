@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+import{createClient}from'../frontend/node_modules/genlayer-js/dist/index.js';import{studioDevnet}from'../frontend/node_modules/genlayer-js/dist/chains/index.js';
+const address=process.argv[2];if(!/^0x[0-9a-fA-F]{40}$/.test(address||''))throw Error('Usage: node scripts/inspect_live.mjs <contract>');const chain={...studioDevnet,id:61997,rpcUrls:{default:{http:['https://studio-next.genlayer.com/api']}}},client=createClient({chain});for(const fn of['get_protocol','get_counts'])console.log(`${fn}=${JSON.stringify(await client.readContract({address,functionName:fn,args:[],stateStatus:'finalized',jsonSafeReturn:true}))}`);

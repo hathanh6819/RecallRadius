@@ -1,0 +1,10 @@
+{
+  "network": "GenLayer Studio Next",
+  "chainId": 61997,
+  "contractAddress": "0x60B0769ca7A88ac89288a98dE974e2527841b97C",
+  "sourceFile": "contracts/recall_radius.py",
+  "status": "deployed-and-live-tested",
+  "constructorArgs": [],
+  "deployerRole": "deployment-only",
+  "custody": false
+}

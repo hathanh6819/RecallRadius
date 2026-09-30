@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+import{createAccount,createClient}from'../frontend/node_modules/genlayer-js/dist/index.js';
+import{studioDevnet}from'../frontend/node_modules/genlayer-js/dist/chains/index.js';
+const CONTRACT=process.argv[2],CASE_ID=Number(process.argv[3]||1);
+if(!/^0x[0-9a-fA-F]{40}$/.test(CONTRACT||''))throw Error('Usage: node scripts/resume_live_assessment.mjs <contract> [case-id]');
+const chain={...studioDevnet,id:61997,name:'Studio Next',rpcUrls:{default:{http:['https://studio-next.genlayer.com/api']}}};
+function hidden(prompt){return new Promise((resolve,reject)=>{process.stdout.write(prompt);process.stdin.setRawMode(true);process.stdin.resume();process.stdin.setEncoding('utf8');let v='';const done=()=>{process.stdin.off('data',on);process.stdin.setRawMode(false);process.stdin.pause()};const on=x=>{for(const ch of x){if(ch==='\u0003'){done();reject(Error('Interrupted'));return}if(ch==='\r'||ch==='\n'){done();process.stdout.write('\n');resolve(v.trim());return}if(ch==='\u007f'||ch==='\b')v=v.slice(0,-1);else v+=ch}};process.stdin.on('data',on)})}
+const key=await hidden('assessment wallet private key: '),account=createAccount(key.startsWith('0x')?key:`0x${key}`),client=createClient({chain,account});
+const read=(fn,args=[])=>client.readContract({address:CONTRACT,functionName:fn,args,stateStatus:'finalized',jsonSafeReturn:true});
+async function write(label,args){const fees=await client.estimateTransactionFees({leaderTimeunitsAllocation:300n,validatorTimeunitsAllocation:600n}),hash=await client.writeContract({account,address:CONTRACT,functionName:'assess_epoch',args,value:0n,fees:{distribution:fees.distribution,feeValue:fees.feeValue}});console.log(`${label}.tx=${hash}`);const receipt=await client.waitForTransactionReceipt({hash,waitUntil:'finalized',interval:3000,retries:600,fullTransaction:false}),tx=await client.getTransaction({hash});console.log(`${label}.execution=${receipt?.txExecutionResultName||'unknown'} consensus=${tx.result_name||tx.result}`)}
+const before=await read('get_counts'),current=await read('get_case',[CASE_ID]);console.log(`wallet=${account.address} before=${JSON.stringify(before)} case_revision=${current.revision}`);
+await write('stale_revision',[CASE_ID,Number(current.revision)-1]);console.log(`after_stale=${JSON.stringify(await read('get_counts'))}`);
+await write('assess_epoch',[CASE_ID,Number(current.revision)]);const counts=await read('get_counts');console.log(`epoch=${JSON.stringify(await read('get_epoch',[Number(counts.epochs)]))}`);for(const id of current.item_ids)console.log(`item_${id}=${JSON.stringify(await read('get_item',[id]))}`);console.log(`final=${JSON.stringify(counts)}`);
