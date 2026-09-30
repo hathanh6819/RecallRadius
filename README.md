@@ -43,6 +43,8 @@ npm run build
 
 ## Live deployment
 
+- Website: https://recallradius.pages.dev
+- Repository: https://github.com/hathanh6819/RecallRadius
 - Studio Next contract: `0x60B0769ca7A88ac89288a98dE974e2527841b97C`
 - Chain ID: `61997`
 - Full finalized transaction matrix and UI readback: [`docs/LIVE_EVIDENCE.md`](docs/LIVE_EVIDENCE.md)

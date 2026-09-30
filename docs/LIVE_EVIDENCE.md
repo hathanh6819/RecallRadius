@@ -2,6 +2,9 @@
 
 Verified on GenLayer Studio Next (chain ID `61997`) on 2026-09-30.
 
+- Production UI: https://recallradius.pages.dev
+- GitHub repository: https://github.com/hathanh6819/RecallRadius
+
 ## Deployment and actors
 
 - Contract: `0x60B0769ca7A88ac89288a98dE974e2527841b97C`
@@ -58,6 +61,8 @@ The production build was opened against the deployed contract and allowed to com
 - displayed contract: `0x60B0769ca7A88ac89288a98dE974e2527841b97C`.
 
 The UI write helper waits for transaction finality and calls the same readback routine after every submitted action. Reviewer-triggered manual refresh uses that routine as well.
+
+The Cloudflare Pages production URL returned HTTP 200 and was inspected after deployment. Its rendered state showed the same `1 / 2 / 1` counters, sealed case, two item verdicts, normalized epoch, source digest and contract address listed above.
 
 ## Adversarial and fail-closed coverage
 
