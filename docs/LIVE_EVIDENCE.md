@@ -1,5 +1,53 @@
 # Studio Next live evidence
 
+## Protocol v2 remediation run — 2026-10-03
+
+- Contract: `0xDAD201Cde0623C1e1BC1FFe87795f5ef7140A96f`
+- Network: GenLayer Studio Next, chain ID `61997`
+- Protocol readback: `RecallRadius`, version `2`, `custody=false`
+- Actors: case author `0x1D283b45974B0be9630DFD1deC6A62a9B72B2760`; independent participant/assessor `0xf96Cf822F9f4e76956AB9fAAa22B3BdCD7b10aD6`
+- Deployer wallet performed deployment only and held no application role.
+
+### Finalized transaction evidence
+
+| Action | Transaction hash |
+|---|---|
+| Create case 1 | `0x25222c67e22be4a30ad9d7746a91d1a748bf3fb532ce86a86de0623d40410337` |
+| Register case 1 positive fixture | `0x41239300a0027924a07e81eb03cad20048321334d91b9f562342d8231f6df449` |
+| Register case 1 negative control | `0xc5787173b55bb6d5d32a5deb2420430d8db05806ff2def7dc7d3cf8bcaeddd68` |
+| Seal case 1 | `0x99eec0ff3d2b22387706e3e3bcbe5b76966019bb01a5148644ca1b894c3374ce` |
+| Create case 2 | `0x631c92ac525a0a2a44960f3e5fe647b858470a3b8411fbb97c38c1c20db028a5` |
+| Register case 2 positive fixture | `0xa48a58edbf4bdc2c8277ee5ab04561d8e983192b537082e1cc94015c34b2801c` |
+| Register case 2 negative control | `0xd22e17ccab0d5664d320a2f15e31699374d7b8ac7f2515218454bd0564e17d5c` |
+| Seal case 2 | `0x3e3170fc788c7bab21bcbbce221d787bf95ce300076aaa22b38ed4dcb5be6d2d` |
+| Assess case 1 → epoch 1 | `0xb16b84f8faa0bfd0aaf00f9c6d9ab9ec4936e073f5629a94709784b231649a35` |
+| Assess case 2 → epoch 2 | `0x0f893a7686a504fcbf10571a43552626670fbe10c6f19d81d05e453851641b37` |
+| Assess case 1 again → epoch 3 | `0x27a9c4c61a97c0a444f5daf5f7e52e854879546600922b36a393ca981cd34622` |
+
+Every receipt reached `FINISHED_WITH_RETURN` with `MAJORITY_AGREE` consensus.
+
+### Finalized state and steward-request proof
+
+- Final counters: `2 cases / 4 items / 3 epochs`.
+- Case 1 owns epoch IDs `[1, 3]`; case 2 owns `[2]`.
+- Global epoch ownership is `1 -> case 1`, `2 -> case 2`, `3 -> case 1`.
+- All three epochs are `NORMALIZED`; transitions are `INITIAL`, `INITIAL`, `UNCHANGED`.
+- Epoch 3's `prior_valid_scope_digest` equals epoch 1's valid `scope_digest`.
+- Case 1's `last_scope_digest` equals epoch 3's valid `scope_digest`.
+- Four finalized item classifications read back as `AFFECTED`, `NOT_AFFECTED`, `AFFECTED`, `NOT_AFFECTED`.
+
+This live run proves that selected-case history is not inferred from the global epoch counter and that a later valid assessment is compared with the case's prior valid scope. The deliberate `SOURCE_UNAVAILABLE` transition is covered by controlled contract tests because the fixed public FDA source was not sabotaged for live evidence. Those tests prove both successful → unavailable → unchanged-success and successful → unavailable → changed-success behavior.
+
+### Reproduction
+
+Run `node scripts/run_live_v2_e2e.mjs` with the two designated test-wallet keys in the environment. The script rejects unexpected wallet addresses, waits for finality after every write, checks per-case epoch ownership and exits nonzero on any mismatch. It never assigns an application role to the deployment wallet.
+
+### Production frontend
+
+Cloudflare Pages deployed the v2 build at `https://recallradius.pages.dev` (immutable deployment `https://d4f44078.recallradius.pages.dev`). Both returned HTTP 200. The published JavaScript bundle contains `0xDAD201Cde0623C1e1BC1FFe87795f5ef7140A96f` and does not contain the retired v1 contract address.
+
+## Protocol v1 historical run — 2026-09-30
+
 Verified on GenLayer Studio Next (chain ID `61997`) on 2026-09-30.
 
 - Production UI: https://recallradius.pages.dev

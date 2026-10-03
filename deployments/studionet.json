@@ -1,10 +1,21 @@
 {
   "network": "GenLayer Studio Next",
   "chainId": 61997,
-  "contractAddress": "0x60B0769ca7A88ac89288a98dE974e2527841b97C",
+  "contractAddress": "0xDAD201Cde0623C1e1BC1FFe87795f5ef7140A96f",
   "sourceFile": "contracts/recall_radius.py",
-  "status": "deployed-and-live-tested",
+  "status": "v2-live-e2e-verified",
   "constructorArgs": [],
   "deployerRole": "deployment-only",
-  "custody": false
+  "custody": false,
+  "protocolVersion": 2,
+  "liveEvidence": {
+    "verifiedAt": "2026-10-03",
+    "cases": 2,
+    "items": 4,
+    "epochs": 3,
+    "caseEpochIds": {
+      "1": [1, 3],
+      "2": [2]
+    }
+  }
 }

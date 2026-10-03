@@ -20,4 +20,6 @@ Because the official advisory can evolve, the exact normalized facts are validat
 - Frontend suite: `6 passed`, including selected-case and multi-case epoch readback.
 - GenVM lint: passed (`3 checks`).
 - Production build: passed (`2,114 modules transformed`).
-- Deployment gate: protocol v2 must be deployed and exercised on Studio Next before this document can claim live verification.
+- Studio Next protocol v2 deployment: verified.
+- Live v2 SDK E2E: passed with `2 cases / 4 items / 3 epochs`, including interleaved per-case epoch histories.
+- Production frontend deployment: verified at `https://recallradius.pages.dev` (HTTP 200). The published bundle contains the v2 address and does not contain the retired v1 address.

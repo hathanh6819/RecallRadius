@@ -45,8 +45,8 @@ npm run build
 
 - Website: https://recallradius.pages.dev
 - Repository: https://github.com/hathanh6819/RecallRadius
-- Retired v1 contract: `0x60B0769ca7A88ac89288a98dE974e2527841b97C`
+- Studio Next v2 contract: `0xDAD201Cde0623C1e1BC1FFe87795f5ef7140A96f`
 - Chain ID: `61997`
 - Full finalized transaction matrix and UI readback: [`docs/LIVE_EVIDENCE.md`](docs/LIVE_EVIDENCE.md)
 
-The source now reports protocol v2 and fixes audit-readback behavior requested by the steward. A new v2 address and fresh live evidence are required before resubmission; the existing production URL still represents the retired v1 deployment until that redeploy is completed.
+The deployed source reports protocol v2 and fixes the audit-readback behavior requested by the steward. The v2 live E2E and production frontend deployment are complete; transaction hashes and finalized readbacks are recorded in the evidence document above.
