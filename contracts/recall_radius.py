@@ -103,8 +103,11 @@ class RecallRadius(gl.Contract):
         except Exception:r={"kind":UNAVAILABLE,"reason":"CONSENSUS_INVALID"}
         if type(r) is not dict or r.get("kind") not in ("NORMALIZED",UNAVAILABLE):r={"kind":UNAVAILABLE,"reason":"CONSENSUS_INVALID"}
         eid=u256(int(self.epoch_count)+1);self.epoch_count=eid
-        prior=c["last_scope_digest"];scope=r.get("scope",{});sd=digest(canon(scope)) if r.get("kind")=="NORMALIZED" else ""
-        transition="INITIAL" if not prior else "UNCHANGED" if prior==sd else "SCOPE_CHANGED"
+        prior=c["last_scope_digest"];scope=r.get("scope",{});normalized=r.get("kind")=="NORMALIZED";sd=digest(canon(scope)) if normalized else ""
+        # A failed source/model epoch is append-only diagnostic history, not a
+        # new scope. Keep the last valid digest so the next valid assessment is
+        # compared with the last valid scope rather than with an empty value.
+        transition="SOURCE_UNAVAILABLE" if not normalized else "INITIAL" if not prior else "UNCHANGED" if prior==sd else "SCOPE_CHANGED"
         diagnostics=[]
         for iid in c["item_ids"]:
             item=self._item(u256(iid));previous=item["status"]
@@ -117,8 +120,10 @@ class RecallRadius(gl.Contract):
                 else:status=NOT_AFFECTED;reason="FIELD_INTERSECTION_MISS"
             item["status"]=status;item["reason"]=reason;item["last_epoch_id"]=int(eid);item["revision"]+=1;self._save_item(item)
             diagnostics.append({"item_id":iid,"previous":previous,"current":status,"reason":reason})
-        record={"id":int(eid),"case_id":int(case_id),"requester":sender(),"status":r.get("kind",UNAVAILABLE),"reason":r.get("reason",""),"source_id":SOURCE_ID,"source_url":SOURCE_URL,"source_digest":r.get("source_digest",""),"scope_digest":sd,"scope_transition":transition,"scope":scope,"diagnostics":diagnostics,"created_at":now()}
-        self.epochs[eid]=canon(record);c["epoch_ids"].append(int(eid));c["last_scope_digest"]=sd;c["revision"]+=1;self._save_case(c);return eid
+        record={"id":int(eid),"case_id":int(case_id),"requester":sender(),"status":r.get("kind",UNAVAILABLE),"reason":r.get("reason",""),"source_id":SOURCE_ID,"source_url":SOURCE_URL,"source_digest":r.get("source_digest",""),"prior_valid_scope_digest":prior,"scope_digest":sd,"scope_transition":transition,"scope":scope,"diagnostics":diagnostics,"created_at":now()}
+        self.epochs[eid]=canon(record);c["epoch_ids"].append(int(eid))
+        if normalized:c["last_scope_digest"]=sd
+        c["revision"]+=1;self._save_case(c);return eid
 
     @gl.public.view
     def get_case(self,case_id:u256)->dict:return self._case(case_id) or {}
@@ -131,6 +136,6 @@ class RecallRadius(gl.Contract):
     @gl.public.view
     def get_counts(self)->dict:return {"cases":int(self.case_count),"items":int(self.item_count),"epochs":int(self.epoch_count)}
     @gl.public.view
-    def get_protocol(self)->dict:return {"name":"RecallRadius","version":1,"chain_id":61997,"source_id":SOURCE_ID,"architecture":"append-only-scope-epochs-deterministic-intersection","roles":"permissionless-case-and-assessment","custody":False}
+    def get_protocol(self)->dict:return {"name":"RecallRadius","version":2,"chain_id":61997,"source_id":SOURCE_ID,"architecture":"append-only-scope-epochs-deterministic-intersection","roles":"permissionless-case-and-assessment","custody":False}
 
 Contract=RecallRadius

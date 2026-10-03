@@ -9,5 +9,15 @@
 7. Read finalized state. The canonical positive item should be `AFFECTED`; the negative control should be `NOT_AFFECTED` when the current FDA scope matches the documented fixture.
 8. Inspect the epoch's source digest, scope digest, transition and per-item diagnostics.
 9. Attempt assessment with a stale case revision and confirm no epoch is added.
+10. Run successful → unavailable → successful assessments. Confirm the unavailable epoch has transition `SOURCE_UNAVAILABLE`, the case retains its last valid scope digest, and the recovery transition compares against that digest.
+11. Create at least two cases with interleaved epochs. Switch the selected case in the frontend and confirm its displayed epoch is the last entry in that case's `epoch_ids`, never the global epoch count.
 
 Because the official advisory can evolve, the exact normalized facts are validator outputs bound to an append-only epoch. A changed page must appear as a new scope digest and `SCOPE_CHANGED`, never overwrite the earlier record.
+
+## Steward remediation status
+
+- Contract suite: `23 passed`, including successful → unavailable → unchanged-success and successful → unavailable → changed-success sequences.
+- Frontend suite: `6 passed`, including selected-case and multi-case epoch readback.
+- GenVM lint: passed (`3 checks`).
+- Production build: passed (`2,114 modules transformed`).
+- Deployment gate: protocol v2 must be deployed and exercised on Studio Next before this document can claim live verification.

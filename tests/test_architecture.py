@@ -6,5 +6,8 @@ def test_source_is_fixed_and_bounded():assert 'SOURCE_URL="https://www.fda.gov/'
 def test_ai_normalizes_but_contract_matches():
     segment=S.split("def assess_epoch",1)[1]
     assert "prompt_comparative" in segment and 'is_green=' in segment and 'is_great=' in segment
-def test_append_only_epoch_diagnostics():assert '"scope_transition":transition' in S and '"diagnostics":diagnostics' in S
+def test_append_only_epoch_diagnostics():assert '"scope_transition":transition' in S and '"diagnostics":diagnostics' in S and '"prior_valid_scope_digest":prior' in S
+def test_failed_epoch_preserves_last_valid_scope():
+    segment=S.split('self.epochs[eid]=canon(record)',1)[1].split('@gl.public.view',1)[0]
+    assert 'if normalized:c["last_scope_digest"]=sd' in segment
 def test_public_abi_annotations_are_importable():assert "import json,re,hashlib,typing" in S

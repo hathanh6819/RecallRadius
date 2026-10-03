@@ -85,6 +85,24 @@ def test_adversarial_authority_text_cannot_expand_output_schema(runtime):
 def test_append_only_epoch_delta(runtime):
     c,g,n=runtime;build(c,g);c.assess_epoch(U256(1),U256(4));first=c.get_epoch(U256(1));n.answer={**SCOPE,"greenwise_all_lots":False};c.assess_epoch(U256(1),U256(5));second=c.get_epoch(U256(2));assert first["scope_transition"]=="INITIAL" and second["scope_transition"]=="SCOPE_CHANGED";assert c.get_epoch(U256(1))==first
 
+def test_success_unavailable_success_compares_with_last_valid_scope(runtime):
+    c,g,n=runtime;build(c,g)
+    first_id=c.assess_epoch(U256(1),U256(4));first=c.get_epoch(first_id);valid_digest=first["scope_digest"]
+    n.text="tiny";failed_id=c.assess_epoch(U256(1),U256(5));failed=c.get_epoch(failed_id)
+    assert failed["status"]=="SOURCE_UNAVAILABLE" and failed["scope_transition"]=="SOURCE_UNAVAILABLE"
+    assert failed["prior_valid_scope_digest"]==valid_digest and failed["scope_digest"]==""
+    assert c.get_case(U256(1))["last_scope_digest"]==valid_digest
+    n.text="FDA OFFICIAL RECORD "+("scope evidence "*100);n.answer=SCOPE.copy()
+    recovered_id=c.assess_epoch(U256(1),U256(6));recovered=c.get_epoch(recovered_id)
+    assert recovered["scope_transition"]=="UNCHANGED"
+    assert recovered["prior_valid_scope_digest"]==valid_digest and recovered["scope_digest"]==valid_digest
+
+def test_success_unavailable_changed_success_reports_scope_changed(runtime):
+    c,g,n=runtime;build(c,g);c.assess_epoch(U256(1),U256(4));valid=c.get_case(U256(1))["last_scope_digest"]
+    n.answer={"bad":"schema"};c.assess_epoch(U256(1),U256(5));assert c.get_case(U256(1))["last_scope_digest"]==valid
+    n.answer={**SCOPE,"greenwise_all_lots":False};eid=c.assess_epoch(U256(1),U256(6));epoch=c.get_epoch(eid)
+    assert epoch["scope_transition"]=="SCOPE_CHANGED" and epoch["prior_valid_scope_digest"]==valid
+
 def test_invalid_item_and_post_seal_edit(runtime):
     c,g,_=runtime;c.create_case("Input validation batch");assert c.register_item(U256(1),"X","bad","","date","Florida")=="INVALID_ITEM";c.register_item(U256(1),"GreenWise","4141506453","A","2028-02-09","FL");g.message.sender_address=SHOPPER;c.register_item(U256(1),"Other","999999999999","B","2028-02-09","FL");g.message.sender_address=AUTHOR;c.seal_case(U256(1));assert c.update_item(U256(1),"GreenWise","4141506453","A","2028-02-09","FL")=="CASE_SEALED"
 

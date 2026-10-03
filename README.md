@@ -26,7 +26,7 @@ FDA states that its recall pages publish company announcements as a public servi
 
 ## Architecture difference
 
-This is not a renamed claim graph, escrow, authorization gate, policy comparison, or recall circuit breaker. Its persistent primitive is a multi-wallet **sealed classification batch** with append-only source epochs. There are no dependencies or propagation waves. Each new source epoch preserves the prior scope, source digest, scope digest, per-item field-intersection diagnostics, and scope transition (`INITIAL`, `UNCHANGED`, or `SCOPE_CHANGED`).
+This is not a renamed claim graph, escrow, authorization gate, policy comparison, or recall circuit breaker. Its persistent primitive is a multi-wallet **sealed classification batch** with append-only source epochs. There are no dependencies or propagation waves. Each valid source epoch preserves its source digest, scope digest, per-item field-intersection diagnostics, and scope transition (`INITIAL`, `UNCHANGED`, or `SCOPE_CHANGED`). A failed assessment records the distinct `SOURCE_UNAVAILABLE` transition without replacing the case's last valid scope digest, so recovery is compared with the last valid scope.
 
 Unlike one-shot semantic-verdict contracts, the model cannot directly select item status. Validators only normalize a bounded FDA tuple; deterministic contract logic performs the intersection.
 
@@ -41,12 +41,12 @@ npm test
 npm run build
 ```
 
-## Live deployment
+## Current deployment status
 
 - Website: https://recallradius.pages.dev
 - Repository: https://github.com/hathanh6819/RecallRadius
-- Studio Next contract: `0x60B0769ca7A88ac89288a98dE974e2527841b97C`
+- Retired v1 contract: `0x60B0769ca7A88ac89288a98dE974e2527841b97C`
 - Chain ID: `61997`
 - Full finalized transaction matrix and UI readback: [`docs/LIVE_EVIDENCE.md`](docs/LIVE_EVIDENCE.md)
 
-The production client defaults to this reviewed deployment. Reviewers may override `VITE_CONTRACT_ADDRESS` when testing another deployment.
+The source now reports protocol v2 and fixes audit-readback behavior requested by the steward. A new v2 address and fresh live evidence are required before resubmission; the existing production URL still represents the retired v1 deployment until that redeploy is completed.
